@@ -39,13 +39,34 @@ supabase = init_connection()
 
 @st.cache_data(ttl=300) 
 def load_cloud_data():
-    response = supabase.table('dealership_database').select("*").execute()
-    df = pd.DataFrame(response.data)
+    all_data = []
+    limit = 1000
+    offset = 0
+    
+    # 🔄 THE PAGINATION LOOP: Fetching 1,000 at a time until it gets everything!
+    while True:
+        response = supabase.table('dealership_database').select("*").range(offset, offset + limit - 1).execute()
+        data = response.data
+        
+        if not data:
+            break  # Stop if there's no more data
+            
+        all_data.extend(data)
+        
+        if len(data) < limit:
+            break  # Stop if the last batch had less than 1,000 cars
+            
+        offset += limit
+        
+    # Convert the massive stacked list into our Pandas DataFrame
+    df = pd.DataFrame(all_data)
+    
     if not df.empty:
         df['Price_Raw'] = pd.to_numeric(df['Price_Raw'], errors='coerce')
         df['Kilometer'] = pd.to_numeric(df['Kilometer'], errors='coerce')
         df['Reg_Year'] = pd.to_numeric(df['Reg_Year'], errors='coerce')
         df['Age'] = pd.to_numeric(df['Age'], errors='coerce')
+        
     return df
 
 # --- LOAD MASTER NEW PRICES CSV ---
@@ -119,7 +140,6 @@ with st.sidebar:
     
     st.markdown("---")
     st.header("2. Deal Specifics")
-    # THE FIX: Min value is 0, Default value is 0
     seller_asking = st.number_input("Seller's Asking Price (₹)", min_value=0, value=0, step=10000)
     target_margin = st.slider("Required Profit Margin (%)", min_value=5, max_value=30, value=15, step=1)
     
@@ -183,7 +203,6 @@ else:
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        # THE FIX: Formats to 0.00 if nothing is typed
         display_asking = f"₹{seller_asking/100000:,.2f} Lakhs" if seller_asking > 0 else "₹0.00 Lakhs"
         st.markdown(f"""
         <div class="metric-box">
@@ -212,7 +231,6 @@ else:
         """, unsafe_allow_html=True)
 
     with col4:
-        # THE FIX: Hides the profit math until a price is typed
         if seller_asking > 0:
             profit_class = "profit-positive" if actual_profit > 0 else "profit-negative"
             profit_label = f"Projected Profit ({profit_margin_pct:.1f}%)" if actual_profit > 0 else "Projected Loss!"
@@ -233,7 +251,6 @@ else:
         """, unsafe_allow_html=True)
 
     # --- ROW 2: DEAL DECISION ALERT ---
-    # THE FIX: Hides the deal alert until a price is typed
     if seller_asking > 0:
         if actual_profit < 0:
             st.error(f"🛑 BAD DEAL: Buying for ₹{seller_asking:,.0f} means a likely loss. Negotiate down to at least ₹{target_buy_price:,.0f}.")
