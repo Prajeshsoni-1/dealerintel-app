@@ -1,0 +1,873 @@
+Make,Model,Variant,Ex_Showroom_Price
+Maruti Suzuki,Swift,Base,649000
+Maruti Suzuki,Swift,Mid,752666
+Maruti Suzuki,Swift,High,856333
+Maruti Suzuki,Swift,Top,960000
+Maruti Suzuki,Baleno,Base,666000
+Maruti Suzuki,Baleno,Mid,773333
+Maruti Suzuki,Baleno,High,880666
+Maruti Suzuki,Baleno,Top,988000
+Maruti Suzuki,Wagon R,Base,554000
+Maruti Suzuki,Wagon R,Mid,616666
+Maruti Suzuki,Wagon R,High,679333
+Maruti Suzuki,Wagon R,Top,742000
+Maruti Suzuki,Brezza,Base,834000
+Maruti Suzuki,Brezza,Mid,1027333
+Maruti Suzuki,Brezza,High,1220666
+Maruti Suzuki,Brezza,Top,1414000
+Maruti Suzuki,Ertiga,Base,869000
+Maruti Suzuki,Ertiga,Mid,1013666
+Maruti Suzuki,Ertiga,High,1158333
+Maruti Suzuki,Ertiga,Top,1303000
+Maruti Suzuki,Dzire,Base,656000
+Maruti Suzuki,Dzire,Mid,750333
+Maruti Suzuki,Dzire,High,844666
+Maruti Suzuki,Dzire,Top,939000
+Maruti Suzuki,Alto,Base,354000
+Maruti Suzuki,Alto,Mid,407000
+Maruti Suzuki,Alto,High,460000
+Maruti Suzuki,Alto,Top,513000
+Maruti Suzuki,Alto K10,Base,399000
+Maruti Suzuki,Alto K10,Mid,464666
+Maruti Suzuki,Alto K10,High,530333
+Maruti Suzuki,Alto K10,Top,596000
+Maruti Suzuki,Fronx,Base,751000
+Maruti Suzuki,Fronx,Mid,935333
+Maruti Suzuki,Fronx,High,1119666
+Maruti Suzuki,Fronx,Top,1304000
+Maruti Suzuki,Grand Vitara,Base,1070000
+Maruti Suzuki,Grand Vitara,Mid,1379666
+Maruti Suzuki,Grand Vitara,High,1689333
+Maruti Suzuki,Grand Vitara,Top,1999000
+Maruti Suzuki,Jimny,Base,1274000
+Maruti Suzuki,Jimny,Mid,1347666
+Maruti Suzuki,Jimny,High,1421333
+Maruti Suzuki,Jimny,Top,1495000
+Maruti Suzuki,Celerio,Base,536000
+Maruti Suzuki,Celerio,Mid,595333
+Maruti Suzuki,Celerio,High,654666
+Maruti Suzuki,Celerio,Top,714000
+Maruti Suzuki,Ignis,Base,584000
+Maruti Suzuki,Ignis,Mid,661333
+Maruti Suzuki,Ignis,High,738666
+Maruti Suzuki,Ignis,Top,816000
+Maruti Suzuki,Ciaz,Base,940000
+Maruti Suzuki,Ciaz,Mid,1036333
+Maruti Suzuki,Ciaz,High,1132666
+Maruti Suzuki,Ciaz,Top,1229000
+Maruti Suzuki,XL6,Base,1161000
+Maruti Suzuki,XL6,Mid,1266333
+Maruti Suzuki,XL6,High,1371666
+Maruti Suzuki,XL6,Top,1477000
+Maruti Suzuki,S-Cross,Base,895000
+Maruti Suzuki,S-Cross,Mid,1027333
+Maruti Suzuki,S-Cross,High,1159666
+Maruti Suzuki,S-Cross,Top,1292000
+Maruti Suzuki,Vitara Brezza,Base,739000
+Maruti Suzuki,Vitara Brezza,Mid,872666
+Maruti Suzuki,Vitara Brezza,High,1006333
+Maruti Suzuki,Vitara Brezza,Top,1140000
+Maruti Suzuki,Omni,Base,300000
+Maruti Suzuki,Omni,Mid,300000
+Maruti Suzuki,Omni,High,300000
+Maruti Suzuki,Omni,Top,300000
+Maruti Suzuki,Eeco,Base,532000
+Maruti Suzuki,Eeco,Mid,574000
+Maruti Suzuki,Eeco,High,616000
+Maruti Suzuki,Eeco,Top,658000
+Maruti Suzuki,Zen,Base,300000
+Maruti Suzuki,Zen,Mid,333333
+Maruti Suzuki,Zen,High,366666
+Maruti Suzuki,Zen,Top,400000
+Hyundai,Creta,Base,1099000
+Hyundai,Creta,Mid,1404000
+Hyundai,Creta,High,1709000
+Hyundai,Creta,Top,2014000
+Hyundai,Venue,Base,794000
+Hyundai,Venue,Mid,978666
+Hyundai,Venue,High,1163333
+Hyundai,Venue,Top,1348000
+Hyundai,i20,Base,704000
+Hyundai,i20,Mid,842666
+Hyundai,i20,High,981333
+Hyundai,i20,Top,1120000
+Hyundai,Grand i10,Base,592000
+Hyundai,Grand i10,Mid,680000
+Hyundai,Grand i10,High,768000
+Hyundai,Grand i10,Top,856000
+Hyundai,Verna,Base,1100000
+Hyundai,Verna,Mid,1313666
+Hyundai,Verna,High,1527333
+Hyundai,Verna,Top,1741000
+Hyundai,Exter,Base,612000
+Hyundai,Exter,Mid,750333
+Hyundai,Exter,High,888666
+Hyundai,Exter,Top,1027000
+Hyundai,Aura,Base,648000
+Hyundai,Aura,Mid,733333
+Hyundai,Aura,High,818666
+Hyundai,Aura,Top,904000
+Hyundai,Alcazar,Base,1677000
+Hyundai,Alcazar,Mid,1827333
+Hyundai,Alcazar,High,1977666
+Hyundai,Alcazar,Top,2128000
+Hyundai,Santro,Base,489000
+Hyundai,Santro,Mid,539666
+Hyundai,Santro,High,590333
+Hyundai,Santro,Top,641000
+Hyundai,Eon,Base,332000
+Hyundai,Eon,Mid,378000
+Hyundai,Eon,High,424000
+Hyundai,Eon,Top,470000
+Hyundai,Tucson,Base,2901000
+Hyundai,Tucson,Mid,3132000
+Hyundai,Tucson,High,3363000
+Hyundai,Tucson,Top,3594000
+Hyundai,Xcent,Base,581000
+Hyundai,Xcent,Mid,680333
+Hyundai,Xcent,High,779666
+Hyundai,Xcent,Top,879000
+Hyundai,Elantra,Base,1589000
+Hyundai,Elantra,Mid,1763333
+Hyundai,Elantra,High,1937666
+Hyundai,Elantra,Top,2112000
+Hyundai,Santa Fe,Base,2786000
+Hyundai,Santa Fe,Mid,2918666
+Hyundai,Santa Fe,High,3051333
+Hyundai,Santa Fe,Top,3184000
+Tata,Nexon,Base,814000
+Tata,Nexon,Mid,1062333
+Tata,Nexon,High,1310666
+Tata,Nexon,Top,1559000
+Tata,Punch,Base,612000
+Tata,Punch,Mid,747666
+Tata,Punch,High,883333
+Tata,Punch,Top,1019000
+Tata,Harrier,Base,1549000
+Tata,Harrier,Mid,1914000
+Tata,Harrier,High,2279000
+Tata,Harrier,Top,2644000
+Tata,Safari,Base,1619000
+Tata,Safari,Mid,1990666
+Tata,Safari,High,2362333
+Tata,Safari,Top,2734000
+Tata,Tiago,Base,564000
+Tata,Tiago,Mid,672333
+Tata,Tiago,High,780666
+Tata,Tiago,Top,889000
+Tata,Altroz,Base,664000
+Tata,Altroz,Mid,802333
+Tata,Altroz,High,940666
+Tata,Altroz,Top,1079000
+Tata,Tigor,Base,629000
+Tata,Tigor,Mid,719000
+Tata,Tigor,High,809000
+Tata,Tigor,Top,899000
+Tata,Hexa,Base,1370000
+Tata,Hexa,Mid,1555666
+Tata,Hexa,High,1741333
+Tata,Hexa,Top,1927000
+Tata,Indica,Base,400000
+Tata,Indica,Mid,433333
+Tata,Indica,High,466666
+Tata,Indica,Top,500000
+Tata,Nano,Base,200000
+Tata,Nano,Mid,233333
+Tata,Nano,High,266666
+Tata,Nano,Top,300000
+Tata,Aria,Base,1000000
+Tata,Aria,Mid,1166666
+Tata,Aria,High,1333333
+Tata,Aria,Top,1500000
+Tata,Sumo,Base,700000
+Tata,Sumo,Mid,766666
+Tata,Sumo,High,833333
+Tata,Sumo,Top,900000
+Tata,Zest,Base,582000
+Tata,Zest,Mid,717333
+Tata,Zest,High,852666
+Tata,Zest,Top,988000
+Tata,Bolt,Base,471000
+Tata,Bolt,Mid,565666
+Tata,Bolt,High,660333
+Tata,Bolt,Top,755000
+Tata,Curvv,Base,1050000
+Tata,Curvv,Mid,1333333
+Tata,Curvv,High,1616666
+Tata,Curvv,Top,1900000
+Mahindra,Scorpio,Base,1358000
+Mahindra,Scorpio,Mid,1487000
+Mahindra,Scorpio,High,1616000
+Mahindra,Scorpio,Top,1745000
+Mahindra,Scorpio-N,Base,1385000
+Mahindra,Scorpio-N,Mid,1741333
+Mahindra,Scorpio-N,High,2097666
+Mahindra,Scorpio-N,Top,2454000
+Mahindra,XUV700,Base,1399000
+Mahindra,XUV700,Mid,1832333
+Mahindra,XUV700,High,2265666
+Mahindra,XUV700,Top,2699000
+Mahindra,Thar,Base,1135000
+Mahindra,Thar,Mid,1343333
+Mahindra,Thar,High,1551666
+Mahindra,Thar,Top,1760000
+Mahindra,XUV500,Base,1231000
+Mahindra,XUV500,Mid,1491000
+Mahindra,XUV500,High,1751000
+Mahindra,XUV500,Top,2011000
+Mahindra,XUV300,Base,799000
+Mahindra,XUV300,Mid,1024333
+Mahindra,XUV300,High,1249666
+Mahindra,XUV300,Top,1475000
+Mahindra,XUV3X0,Base,749000
+Mahindra,XUV3X0,Mid,1015666
+Mahindra,XUV3X0,High,1282333
+Mahindra,XUV3X0,Top,1549000
+Mahindra,Bolero,Base,979000
+Mahindra,Bolero,Mid,1016000
+Mahindra,Bolero,High,1053000
+Mahindra,Bolero,Top,1090000
+Mahindra,TUV300,Base,859000
+Mahindra,TUV300,Mid,926333
+Mahindra,TUV300,High,993666
+Mahindra,TUV300,Top,1061000
+Mahindra,Marazzo,Base,1439000
+Mahindra,Marazzo,Mid,1517000
+Mahindra,Marazzo,High,1595000
+Mahindra,Marazzo,Top,1673000
+Mahindra,KUV100,Base,618000
+Mahindra,KUV100,Mid,673333
+Mahindra,KUV100,High,728666
+Mahindra,KUV100,Top,784000
+Mahindra,Quanto,Base,680000
+Mahindra,Quanto,Mid,733333
+Mahindra,Quanto,High,786666
+Mahindra,Quanto,Top,840000
+Mahindra,Xylo,Base,917000
+Mahindra,Xylo,Mid,1011333
+Mahindra,Xylo,High,1105666
+Mahindra,Xylo,Top,1200000
+Kia,Seltos,Base,1089000
+Kia,Seltos,Mid,1404000
+Kia,Seltos,High,1719000
+Kia,Seltos,Top,2034000
+Kia,Sonet,Base,799000
+Kia,Sonet,Mid,1055666
+Kia,Sonet,High,1312333
+Kia,Sonet,Top,1569000
+Kia,Carens,Base,1044000
+Kia,Carens,Mid,1344000
+Kia,Carens,High,1644000
+Kia,Carens,Top,1944000
+Kia,Carnival,Base,3099000
+Kia,Carnival,Mid,3249000
+Kia,Carnival,High,3399000
+Kia,Carnival,Top,3549000
+Kia,EV6,Base,6095000
+Kia,EV6,Mid,6261666
+Kia,EV6,High,6428333
+Kia,EV6,Top,6595000
+Toyota,Innova,Base,1493000
+Toyota,Innova,Mid,1578666
+Toyota,Innova,High,1664333
+Toyota,Innova,Top,1750000
+Toyota,Innova Crysta,Base,1999000
+Toyota,Innova Crysta,Mid,2209333
+Toyota,Innova Crysta,High,2419666
+Toyota,Innova Crysta,Top,2630000
+Toyota,Innova Hycross,Base,1977000
+Toyota,Innova Hycross,Mid,2350666
+Toyota,Innova Hycross,High,2724333
+Toyota,Innova Hycross,Top,3098000
+Toyota,Fortuner,Base,3343000
+Toyota,Fortuner,Mid,3943333
+Toyota,Fortuner,High,4543666
+Toyota,Fortuner,Top,5144000
+Toyota,Glanza,Base,686000
+Toyota,Glanza,Mid,790666
+Toyota,Glanza,High,895333
+Toyota,Glanza,Top,1000000
+Toyota,Urban Cruiser,Base,902000
+Toyota,Urban Cruiser,Mid,992333
+Toyota,Urban Cruiser,High,1082666
+Toyota,Urban Cruiser,Top,1173000
+Toyota,Hyryder,Base,1114000
+Toyota,Hyryder,Mid,1415666
+Toyota,Hyryder,High,1717333
+Toyota,Hyryder,Top,2019000
+Toyota,Etios,Base,699000
+Toyota,Etios,Mid,771000
+Toyota,Etios,High,843000
+Toyota,Etios,Top,915000
+Toyota,Corolla Altis,Base,1646000
+Toyota,Corolla Altis,Mid,1770666
+Toyota,Corolla Altis,High,1895333
+Toyota,Corolla Altis,Top,2020000
+Toyota,Camry,Base,4617000
+Toyota,Camry,Mid,4617000
+Toyota,Camry,High,4617000
+Toyota,Camry,Top,4617000
+Toyota,Yaris,Base,916000
+Toyota,Yaris,Mid,1097333
+Toyota,Yaris,High,1278666
+Toyota,Yaris,Top,1460000
+Toyota,Vellfire,Base,11990000
+Toyota,Vellfire,Mid,12326666
+Toyota,Vellfire,High,12663333
+Toyota,Vellfire,Top,13000000
+Honda,City,Base,1182000
+Honda,City,Mid,1331333
+Honda,City,High,1480666
+Honda,City,Top,1630000
+Honda,Amaze,Base,715000
+Honda,Amaze,Mid,807333
+Honda,Amaze,High,899666
+Honda,Amaze,Top,992000
+Honda,Elevate,Base,1157000
+Honda,Elevate,Mid,1318000
+Honda,Elevate,High,1479000
+Honda,Elevate,Top,1640000
+Honda,Jazz,Base,811000
+Honda,Jazz,Mid,887666
+Honda,Jazz,High,964333
+Honda,Jazz,Top,1041000
+Honda,WR-V,Base,925000
+Honda,WR-V,Mid,1030333
+Honda,WR-V,High,1135666
+Honda,WR-V,Top,1241000
+Honda,Civic,Base,1793000
+Honda,Civic,Mid,1940000
+Honda,Civic,High,2087000
+Honda,Civic,Top,2234000
+Honda,Brio,Base,482000
+Honda,Brio,Mid,552000
+Honda,Brio,High,622000
+Honda,Brio,Top,692000
+Honda,CR-V,Base,2827000
+Honda,CR-V,Mid,2977000
+Honda,CR-V,High,3127000
+Honda,CR-V,Top,3277000
+Honda,BR-V,Base,952000
+Honda,BR-V,Mid,1095333
+Honda,BR-V,High,1238666
+Honda,BR-V,Top,1382000
+Honda,Mobilio,Base,738000
+Honda,Mobilio,Mid,904666
+Honda,Mobilio,High,1071333
+Honda,Mobilio,Top,1238000
+Honda,Accord,Base,4321000
+Honda,Accord,Mid,4321000
+Honda,Accord,High,4321000
+Honda,Accord,Top,4321000
+MG,Hector,Base,1398000
+MG,Hector,Mid,1673000
+MG,Hector,High,1948000
+MG,Hector,Top,2223000
+MG,Hector Plus,Base,1749000
+MG,Hector Plus,Mid,1930000
+MG,Hector Plus,High,2111000
+MG,Hector Plus,Top,2292000
+MG,Astor,Base,998000
+MG,Astor,Mid,1261666
+MG,Astor,High,1525333
+MG,Astor,Top,1789000
+MG,Gloster,Base,3879000
+MG,Gloster,Mid,4024333
+MG,Gloster,High,4169666
+MG,Gloster,Top,4315000
+MG,Comet EV,Base,698000
+MG,Comet EV,Mid,778666
+MG,Comet EV,High,859333
+MG,Comet EV,Top,940000
+MG,ZS EV,Base,1898000
+MG,ZS EV,Mid,2101333
+MG,ZS EV,High,2304666
+MG,ZS EV,Top,2508000
+MG,Windsor EV,Base,1349000
+MG,Windsor EV,Mid,1415666
+MG,Windsor EV,High,1482333
+MG,Windsor EV,Top,1549000
+Skoda,Kushaq,Base,1089000
+Skoda,Kushaq,Mid,1352333
+Skoda,Kushaq,High,1615666
+Skoda,Kushaq,Top,1879000
+Skoda,Slavia,Base,1069000
+Skoda,Slavia,Mid,1335666
+Skoda,Slavia,High,1602333
+Skoda,Slavia,Top,1869000
+Skoda,Rapid,Base,779000
+Skoda,Rapid,Mid,969000
+Skoda,Rapid,High,1159000
+Skoda,Rapid,Top,1349000
+Skoda,Octavia,Base,2735000
+Skoda,Octavia,Mid,2838333
+Skoda,Octavia,High,2941666
+Skoda,Octavia,Top,3045000
+Skoda,Superb,Base,3419000
+Skoda,Superb,Mid,3522333
+Skoda,Superb,High,3625666
+Skoda,Superb,Top,3729000
+Skoda,Kodiaq,Base,3999000
+Skoda,Kodiaq,Mid,3999000
+Skoda,Kodiaq,High,3999000
+Skoda,Kodiaq,Top,3999000
+Skoda,Laura,Base,1299000
+Skoda,Laura,Mid,1449333
+Skoda,Laura,High,1599666
+Skoda,Laura,Top,1750000
+Skoda,Fabia,Base,500000
+Skoda,Fabia,Mid,600000
+Skoda,Fabia,High,700000
+Skoda,Fabia,Top,800000
+Skoda,Yeti,Base,1550000
+Skoda,Yeti,Mid,1683333
+Skoda,Yeti,High,1816666
+Skoda,Yeti,Top,1950000
+Skoda,Kylaq,Base,850000
+Skoda,Kylaq,Mid,1016666
+Skoda,Kylaq,High,1183333
+Skoda,Kylaq,Top,1350000
+Volkswagen,Polo,Base,645000
+Volkswagen,Polo,Mid,771666
+Volkswagen,Polo,High,898333
+Volkswagen,Polo,Top,1025000
+Volkswagen,Vento,Base,869000
+Volkswagen,Vento,Mid,1062333
+Volkswagen,Vento,High,1255666
+Volkswagen,Vento,Top,1449000
+Volkswagen,Taigun,Base,1169000
+Volkswagen,Taigun,Mid,1445666
+Volkswagen,Taigun,High,1722333
+Volkswagen,Taigun,Top,1999000
+Volkswagen,Virtus,Base,1155000
+Volkswagen,Virtus,Mid,1416666
+Volkswagen,Virtus,High,1678333
+Volkswagen,Virtus,Top,1940000
+Volkswagen,Ameo,Base,599000
+Volkswagen,Ameo,Mid,732666
+Volkswagen,Ameo,High,866333
+Volkswagen,Ameo,Top,1000000
+Volkswagen,Jetta,Base,1478000
+Volkswagen,Jetta,Mid,1681666
+Volkswagen,Jetta,High,1885333
+Volkswagen,Jetta,Top,2089000
+Volkswagen,Tiguan,Base,3516000
+Volkswagen,Tiguan,Mid,3516000
+Volkswagen,Tiguan,High,3516000
+Volkswagen,Tiguan,Top,3516000
+Volkswagen,Passat,Base,2599000
+Volkswagen,Passat,Mid,2839333
+Volkswagen,Passat,High,3079666
+Volkswagen,Passat,Top,3320000
+Volkswagen,CrossPolo,Base,750000
+Volkswagen,CrossPolo,Mid,816666
+Volkswagen,CrossPolo,High,883333
+Volkswagen,CrossPolo,Top,950000
+Nissan,Magnite,Base,599000
+Nissan,Magnite,Mid,775000
+Nissan,Magnite,High,951000
+Nissan,Magnite,Top,1127000
+Nissan,Micra,Base,662000
+Nissan,Micra,Mid,712000
+Nissan,Micra,High,762000
+Nissan,Micra,Top,812000
+Nissan,Sunny,Base,707000
+Nissan,Sunny,Mid,834333
+Nissan,Sunny,High,961666
+Nissan,Sunny,Top,1089000
+Nissan,Terrano,Base,999000
+Nissan,Terrano,Mid,1154000
+Nissan,Terrano,High,1309000
+Nissan,Terrano,Top,1464000
+Nissan,Kicks,Base,949000
+Nissan,Kicks,Mid,1129333
+Nissan,Kicks,High,1309666
+Nissan,Kicks,Top,1490000
+Nissan,X-Trail,Base,3299000
+Nissan,X-Trail,Mid,3299000
+Nissan,X-Trail,High,3299000
+Nissan,X-Trail,Top,3299000
+Jeep,Compass,Base,1899000
+Jeep,Compass,Mid,2346333
+Jeep,Compass,High,2793666
+Jeep,Compass,Top,3241000
+Jeep,Meridian,Base,3360000
+Jeep,Meridian,Mid,3561666
+Jeep,Meridian,High,3763333
+Jeep,Meridian,Top,3965000
+Jeep,Wrangler,Base,6265000
+Jeep,Wrangler,Mid,6398333
+Jeep,Wrangler,High,6531666
+Jeep,Wrangler,Top,6665000
+Jeep,Grand Cherokee,Base,8050000
+Jeep,Grand Cherokee,Mid,8050000
+Jeep,Grand Cherokee,High,8050000
+Jeep,Grand Cherokee,Top,8050000
+Ford,EcoSport,Base,819000
+Ford,EcoSport,Mid,935666
+Ford,EcoSport,High,1052333
+Ford,EcoSport,Top,1169000
+Ford,Endeavour,Base,3381000
+Ford,Endeavour,Mid,3462666
+Ford,Endeavour,High,3544333
+Ford,Endeavour,Top,3626000
+Ford,Figo,Base,582000
+Ford,Figo,Mid,667000
+Ford,Figo,High,752000
+Ford,Figo,Top,837000
+Ford,Aspire,Base,727000
+Ford,Aspire,Mid,775333
+Ford,Aspire,High,823666
+Ford,Aspire,Top,872000
+Ford,Freestyle,Base,727000
+Ford,Freestyle,Mid,785333
+Ford,Freestyle,High,843666
+Ford,Freestyle,Top,902000
+Ford,Fiesta,Base,863000
+Ford,Fiesta,Mid,917000
+Ford,Fiesta,High,971000
+Ford,Fiesta,Top,1025000
+Ford,Mustang,Base,7461000
+Ford,Mustang,Mid,7461000
+Ford,Mustang,High,7461000
+Ford,Mustang,Top,7461000
+Mercedes-Benz,C-Class,Base,6185000
+Mercedes-Benz,C-Class,Mid,6390000
+Mercedes-Benz,C-Class,High,6595000
+Mercedes-Benz,C-Class,Top,6800000
+Mercedes-Benz,E-Class,Base,7590000
+Mercedes-Benz,E-Class,Mid,8023333
+Mercedes-Benz,E-Class,High,8456666
+Mercedes-Benz,E-Class,Top,8890000
+Mercedes-Benz,S-Class,Base,17600000
+Mercedes-Benz,S-Class,Mid,17933333
+Mercedes-Benz,S-Class,High,18266666
+Mercedes-Benz,S-Class,Top,18600000
+Mercedes-Benz,GLA,Base,5050000
+Mercedes-Benz,GLA,Mid,5263333
+Mercedes-Benz,GLA,High,5476666
+Mercedes-Benz,GLA,Top,5690000
+Mercedes-Benz,GLC,Base,7420000
+Mercedes-Benz,GLC,Mid,7453333
+Mercedes-Benz,GLC,High,7486666
+Mercedes-Benz,GLC,Top,7520000
+Mercedes-Benz,GLE,Base,9640000
+Mercedes-Benz,GLE,Mid,10260000
+Mercedes-Benz,GLE,High,10880000
+Mercedes-Benz,GLE,Top,11500000
+Mercedes-Benz,GLS,Base,13200000
+Mercedes-Benz,GLS,Mid,13366666
+Mercedes-Benz,GLS,High,13533333
+Mercedes-Benz,GLS,Top,13700000
+Mercedes-Benz,A-Class,Base,4580000
+Mercedes-Benz,A-Class,Mid,4670000
+Mercedes-Benz,A-Class,High,4760000
+Mercedes-Benz,A-Class,Top,4850000
+Mercedes-Benz,CLA,Base,3172000
+Mercedes-Benz,CLA,Mid,3348000
+Mercedes-Benz,CLA,High,3524000
+Mercedes-Benz,CLA,Top,3700000
+Mercedes-Benz,G-Class,Base,25500000
+Mercedes-Benz,G-Class,Mid,30333333
+Mercedes-Benz,G-Class,High,35166666
+Mercedes-Benz,G-Class,Top,40000000
+Mercedes-Benz,Maybach,Base,26900000
+Mercedes-Benz,Maybach,Mid,29266666
+Mercedes-Benz,Maybach,High,31633333
+Mercedes-Benz,Maybach,Top,34000000
+Mercedes-Benz,EQE,Base,13900000
+Mercedes-Benz,EQE,Mid,13900000
+Mercedes-Benz,EQE,High,13900000
+Mercedes-Benz,EQE,Top,13900000
+Mercedes-Benz,EQS,Base,16200000
+Mercedes-Benz,EQS,Mid,16200000
+Mercedes-Benz,EQS,High,16200000
+Mercedes-Benz,EQS,Top,16200000
+BMW,3 Series,Base,7290000
+BMW,3 Series,Mid,7290000
+BMW,3 Series,High,7290000
+BMW,3 Series,Top,7290000
+BMW,5 Series,Base,6540000
+BMW,5 Series,Mid,6843333
+BMW,5 Series,High,7146666
+BMW,5 Series,Top,7450000
+BMW,7 Series,Base,18100000
+BMW,7 Series,Mid,18200000
+BMW,7 Series,High,18300000
+BMW,7 Series,Top,18400000
+BMW,X1,Base,4950000
+BMW,X1,Mid,5050000
+BMW,X1,High,5150000
+BMW,X1,Top,5250000
+BMW,X3,Base,6850000
+BMW,X3,Mid,7490000
+BMW,X3,High,8130000
+BMW,X3,Top,8770000
+BMW,X5,Base,9520000
+BMW,X5,Mid,9946666
+BMW,X5,High,10373333
+BMW,X5,Top,10800000
+BMW,X7,Base,13000000
+BMW,X7,Mid,13133333
+BMW,X7,High,13266666
+BMW,X7,Top,13400000
+BMW,Z4,Base,9090000
+BMW,Z4,Mid,9090000
+BMW,Z4,High,9090000
+BMW,Z4,Top,9090000
+BMW,M2,Base,9990000
+BMW,M2,Mid,9990000
+BMW,M2,High,9990000
+BMW,M2,Top,9990000
+BMW,M3,Base,14700000
+BMW,M3,Mid,14700000
+BMW,M3,High,14700000
+BMW,M3,Top,14700000
+BMW,M4,Base,15300000
+BMW,M4,Mid,15300000
+BMW,M4,High,15300000
+BMW,M4,Top,15300000
+BMW,i4,Base,7250000
+BMW,i4,Mid,7416666
+BMW,i4,High,7583333
+BMW,i4,Top,7750000
+BMW,iX,Base,12100000
+BMW,iX,Mid,12100000
+BMW,iX,High,12100000
+BMW,iX,Top,12100000
+Audi,A3,Base,2920000
+Audi,A3,Mid,3020000
+Audi,A3,High,3120000
+Audi,A3,Top,3220000
+Audi,A4,Base,4385000
+Audi,A4,Mid,4651666
+Audi,A4,High,4918333
+Audi,A4,Top,5185000
+Audi,A6,Base,6400000
+Audi,A6,Mid,6600000
+Audi,A6,High,6800000
+Audi,A6,Top,7000000
+Audi,A8,Base,13400000
+Audi,A8,Mid,14366666
+Audi,A8,High,15333333
+Audi,A8,Top,16300000
+Audi,Q3,Base,4381000
+Audi,Q3,Mid,4693000
+Audi,Q3,High,5005000
+Audi,Q3,Top,5317000
+Audi,Q5,Base,6518000
+Audi,Q5,Mid,6693666
+Audi,Q5,High,6869333
+Audi,Q5,Top,7045000
+Audi,Q7,Base,8692000
+Audi,Q7,Mid,8943000
+Audi,Q7,High,9194000
+Audi,Q7,Top,9445000
+Audi,Q8,Base,10700000
+Audi,Q8,Mid,11900000
+Audi,Q8,High,13100000
+Audi,Q8,Top,14300000
+Audi,e-tron,Base,10200000
+Audi,e-tron,Mid,11000000
+Audi,e-tron,High,11800000
+Audi,e-tron,Top,12600000
+Audi,TT,Base,6500000
+Audi,TT,Mid,6500000
+Audi,TT,High,6500000
+Audi,TT,Top,6500000
+Audi,R8,Base,23000000
+Audi,R8,Mid,24333333
+Audi,R8,High,25666666
+Audi,R8,Top,27000000
+Volvo,XC40,Base,4640000
+Volvo,XC40,Mid,4640000
+Volvo,XC40,High,4640000
+Volvo,XC40,Top,4640000
+Volvo,XC60,Base,6890000
+Volvo,XC60,Mid,6890000
+Volvo,XC60,High,6890000
+Volvo,XC60,Top,6890000
+Volvo,XC90,Base,10000000
+Volvo,XC90,Mid,10000000
+Volvo,XC90,High,10000000
+Volvo,XC90,Top,10000000
+Volvo,S60,Base,4590000
+Volvo,S60,Mid,4590000
+Volvo,S60,High,4590000
+Volvo,S60,Top,4590000
+Volvo,S90,Base,6825000
+Volvo,S90,Mid,6825000
+Volvo,S90,High,6825000
+Volvo,S90,Top,6825000
+Volvo,V40,Base,3000000
+Volvo,V40,Mid,3066666
+Volvo,V40,High,3133333
+Volvo,V40,Top,3200000
+Land Rover,Range Rover,Base,23800000
+Land Rover,Range Rover,Mid,29766666
+Land Rover,Range Rover,High,35733333
+Land Rover,Range Rover,Top,41700000
+Land Rover,Range Rover Sport,Base,16900000
+Land Rover,Range Rover Sport,Mid,20600000
+Land Rover,Range Rover Sport,High,24300000
+Land Rover,Range Rover Sport,Top,28000000
+Land Rover,Range Rover Evoque,Base,6790000
+Land Rover,Range Rover Evoque,Mid,6790000
+Land Rover,Range Rover Evoque,High,6790000
+Land Rover,Range Rover Evoque,Top,6790000
+Land Rover,Range Rover Velar,Base,8790000
+Land Rover,Range Rover Velar,Mid,8790000
+Land Rover,Range Rover Velar,High,8790000
+Land Rover,Range Rover Velar,Top,8790000
+Land Rover,Discovery,Base,9700000
+Land Rover,Discovery,Mid,11233333
+Land Rover,Discovery,High,12766666
+Land Rover,Discovery,Top,14300000
+Land Rover,Discovery Sport,Base,6790000
+Land Rover,Discovery Sport,Mid,6790000
+Land Rover,Discovery Sport,High,6790000
+Land Rover,Discovery Sport,Top,6790000
+Land Rover,Defender,Base,9700000
+Land Rover,Defender,Mid,14133333
+Land Rover,Defender,High,18566666
+Land Rover,Defender,Top,23000000
+Jaguar,XE,Base,4664000
+Jaguar,XE,Mid,4726000
+Jaguar,XE,High,4788000
+Jaguar,XE,Top,4850000
+Jaguar,XF,Base,7160000
+Jaguar,XF,Mid,7306666
+Jaguar,XF,High,7453333
+Jaguar,XF,Top,7600000
+Jaguar,XJ,Base,9900000
+Jaguar,XJ,Mid,13166666
+Jaguar,XJ,High,16433333
+Jaguar,XJ,Top,19700000
+Jaguar,F-Pace,Base,7290000
+Jaguar,F-Pace,Mid,7290000
+Jaguar,F-Pace,High,7290000
+Jaguar,F-Pace,Top,7290000
+Jaguar,F-Type,Base,10000000
+Jaguar,F-Type,Mid,11766666
+Jaguar,F-Type,High,13533333
+Jaguar,F-Type,Top,15300000
+Porsche,Macan,Base,8806000
+Porsche,Macan,Mid,10970666
+Porsche,Macan,High,13135333
+Porsche,Macan,Top,15300000
+Porsche,Cayenne,Base,13500000
+Porsche,Cayenne,Mid,15666666
+Porsche,Cayenne,High,17833333
+Porsche,Cayenne,Top,20000000
+Porsche,Panamera,Base,16800000
+Porsche,Panamera,Mid,20433333
+Porsche,Panamera,High,24066666
+Porsche,Panamera,Top,27700000
+Porsche,911,Base,18600000
+Porsche,911,Mid,23566666
+Porsche,911,High,28533333
+Porsche,911,Top,33500000
+Porsche,Taycan,Base,16100000
+Porsche,Taycan,Mid,18833333
+Porsche,Taycan,High,21566666
+Porsche,Taycan,Top,24300000
+Porsche,718,Base,14800000
+Porsche,718,Mid,19000000
+Porsche,718,High,23200000
+Porsche,718,Top,27400000
+Lexus,NX,Base,6735000
+Lexus,NX,Mid,6964666
+Lexus,NX,High,7194333
+Lexus,NX,Top,7424000
+Lexus,RX,Base,9580000
+Lexus,RX,Mid,10320000
+Lexus,RX,High,11060000
+Lexus,RX,Top,11800000
+Lexus,LX,Base,28200000
+Lexus,LX,Mid,28200000
+Lexus,LX,High,28200000
+Lexus,LX,Top,28200000
+Lexus,ES,Base,6310000
+Lexus,ES,Mid,6530000
+Lexus,ES,High,6750000
+Lexus,ES,Top,6970000
+Lexus,LS,Base,19600000
+Lexus,LS,Mid,20633333
+Lexus,LS,High,21666666
+Lexus,LS,Top,22700000
+Lexus,LM,Base,20000000
+Lexus,LM,Mid,21666666
+Lexus,LM,High,23333333
+Lexus,LM,Top,25000000
+Lamborghini,Urus,Base,41800000
+Lamborghini,Urus,Mid,41933333
+Lamborghini,Urus,High,42066666
+Lamborghini,Urus,Top,42200000
+Lamborghini,Huracan,Base,32200000
+Lamborghini,Huracan,Mid,38100000
+Lamborghini,Huracan,High,44000000
+Lamborghini,Huracan,Top,49900000
+Lamborghini,Aventador,Base,50100000
+Lamborghini,Aventador,Mid,54233333
+Lamborghini,Aventador,High,58366666
+Lamborghini,Aventador,Top,62500000
+Lamborghini,Revuelto,Base,88900000
+Lamborghini,Revuelto,Mid,88900000
+Lamborghini,Revuelto,High,88900000
+Lamborghini,Revuelto,Top,88900000
+Ferrari,Roma,Base,37600000
+Ferrari,Roma,Mid,37600000
+Ferrari,Roma,High,37600000
+Ferrari,Roma,Top,37600000
+Ferrari,Portofino,Base,35000000
+Ferrari,Portofino,Mid,35000000
+Ferrari,Portofino,High,35000000
+Ferrari,Portofino,Top,35000000
+Ferrari,F8 Tributo,Base,40200000
+Ferrari,F8 Tributo,Mid,40200000
+Ferrari,F8 Tributo,High,40200000
+Ferrari,F8 Tributo,Top,40200000
+Ferrari,SF90 Stradale,Base,75000000
+Ferrari,SF90 Stradale,Mid,75000000
+Ferrari,SF90 Stradale,High,75000000
+Ferrari,SF90 Stradale,Top,75000000
+Ferrari,296 GTB,Base,54000000
+Ferrari,296 GTB,Mid,54000000
+Ferrari,296 GTB,High,54000000
+Ferrari,296 GTB,Top,54000000
+Ferrari,Purosangue,Base,105000000
+Ferrari,Purosangue,Mid,105000000
+Ferrari,Purosangue,High,105000000
+Ferrari,Purosangue,Top,105000000
+Rolls-Royce,Phantom,Base,95000000
+Rolls-Royce,Phantom,Mid,98333333
+Rolls-Royce,Phantom,High,101666666
+Rolls-Royce,Phantom,Top,105000000
+Rolls-Royce,Ghost,Base,69500000
+Rolls-Royce,Ghost,Mid,72833333
+Rolls-Royce,Ghost,High,76166666
+Rolls-Royce,Ghost,Top,79500000
+Rolls-Royce,Wraith,Base,62200000
+Rolls-Royce,Wraith,Mid,65533333
+Rolls-Royce,Wraith,High,68866666
+Rolls-Royce,Wraith,Top,72200000
+Rolls-Royce,Cullinan,Base,69500000
+Rolls-Royce,Cullinan,Mid,69500000
+Rolls-Royce,Cullinan,High,69500000
+Rolls-Royce,Cullinan,Top,69500000
+Rolls-Royce,Dawn,Base,70500000
+Rolls-Royce,Dawn,Mid,70500000
+Rolls-Royce,Dawn,High,70500000
+Rolls-Royce,Dawn,Top,70500000
+Bentley,Continental GT,Base,32900000
+Bentley,Continental GT,Mid,35400000
+Bentley,Continental GT,High,37900000
+Bentley,Continental GT,Top,40400000
+Bentley,Flying Spur,Base,32200000
+Bentley,Flying Spur,Mid,32833333
+Bentley,Flying Spur,High,33466666
+Bentley,Flying Spur,Top,34100000
+Bentley,Bentayga,Base,41000000
+Bentley,Bentayga,Mid,41000000
+Bentley,Bentayga,High,41000000
+Bentley,Bentayga,Top,41000000
