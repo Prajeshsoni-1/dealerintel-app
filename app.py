@@ -54,7 +54,6 @@ def load_new_prices():
     if os.path.exists("new_car_prices.csv"):
         try:
             temp_df = pd.read_csv("new_car_prices.csv")
-            # Strip hidden spaces from headers just in case
             temp_df.columns = temp_df.columns.str.strip() 
             return temp_df
         except Exception:
@@ -77,9 +76,17 @@ with st.sidebar:
         st.markdown("### 🏎️ DealerIntel Cloud")
     
     st.markdown("---")
+    
+    with st.expander("☁️ Check Live Cloud Inventory"):
+        if not df.empty:
+            st.write(f"**Total Cars Scraped:** {len(df)}")
+            inventory_summary = df.groupby(['Make/Brand', 'Model']).size().reset_index(name='Available Data')
+            st.dataframe(inventory_summary, hide_index=True, use_container_width=True)
+        else:
+            st.write("Database is currently empty.")
+            
     st.header("1. Market Filters")
 
-    # Use your CSV file for the dropdown menus!
     if not new_prices_df.empty and 'Make' in new_prices_df.columns:
         brands = sorted(new_prices_df['Make'].dropna().unique().tolist())
     else:
@@ -94,6 +101,12 @@ with st.sidebar:
 
     selected_model = st.selectbox("Model", models)
 
+    if not df.empty:
+        years = ["Any Year"] + sorted(df[(df['Make/Brand'] == selected_brand) & (df['Model'] == selected_model)]['Reg_Year'].dropna().astype(int).unique().tolist(), reverse=True)
+    else:
+        years = ["Any Year"]
+    selected_year = st.selectbox("Registration Year", years)
+
     locations = ["All India"] + sorted(df['Location'].dropna().unique().tolist()) if not df.empty else ["All India"]
     selected_location = st.selectbox("State / Location", locations)
 
@@ -106,7 +119,8 @@ with st.sidebar:
     
     st.markdown("---")
     st.header("2. Deal Specifics")
-    seller_asking = st.number_input("Seller's Asking Price (₹)", min_value=10000, value=350000, step=10000)
+    # THE FIX: Min value is 0, Default value is 0
+    seller_asking = st.number_input("Seller's Asking Price (₹)", min_value=0, value=0, step=10000)
     target_margin = st.slider("Required Profit Margin (%)", min_value=5, max_value=30, value=15, step=1)
     
     st.markdown("---")
@@ -114,9 +128,11 @@ with st.sidebar:
     known_new_price = st.number_input("Manual Override New Price (₹)", min_value=0, value=0, step=50000, help="Leave at 0 to use your Master CSV Database.")
 
 # ==========================================
-# --- FILTER LOGIC (This is what was missing!) ---
+# --- FILTER LOGIC ---
 # ==========================================
 mask = (df['Make/Brand'] == selected_brand) & (df['Model'] == selected_model)
+if selected_year != "Any Year":
+    mask = mask & (df['Reg_Year'] == int(selected_year)) 
 if selected_location != "All India":
     mask = mask & (df['Location'] == selected_location)
 if selected_variant != "Any Variant":
@@ -129,7 +145,7 @@ filtered_data = df[mask]
 st.title(f"Deal Analyzer: {selected_brand} {selected_model}")
 
 if filtered_data.empty:
-    st.warning("⚠️ No live market data found for this exact combination yet. Try setting Variant to 'Any Variant' or Location to 'All India'.")
+    st.warning("⚠️ No live market data found for this exact combination yet. Try setting Variant or Year to 'Any' or check the Cloud Inventory tracker in the sidebar.")
 else:
     # --- CORE MATH ---
     avg_market_price = filtered_data['Price_Raw'].mean()
@@ -167,10 +183,12 @@ else:
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
+        # THE FIX: Formats to 0.00 if nothing is typed
+        display_asking = f"₹{seller_asking/100000:,.2f} Lakhs" if seller_asking > 0 else "₹0.00 Lakhs"
         st.markdown(f"""
         <div class="metric-box">
             <p style="color:#94A3B8; margin-bottom:0px;">Seller's Asking Price</p>
-            <h3 style="color:#F8FAFC;">₹{seller_asking/100000:,.2f} Lakhs</h3>
+            <h3 style="color:#F8FAFC;">{display_asking}</h3>
             <p style="color:#94A3B8; font-size:12px;">The price on the table</p>
         </div>
         """, unsafe_allow_html=True)
@@ -194,24 +212,37 @@ else:
         """, unsafe_allow_html=True)
 
     with col4:
-        profit_class = "profit-positive" if actual_profit > 0 else "profit-negative"
-        profit_label = f"Projected Profit ({profit_margin_pct:.1f}%)" if actual_profit > 0 else "Projected Loss!"
-        
+        # THE FIX: Hides the profit math until a price is typed
+        if seller_asking > 0:
+            profit_class = "profit-positive" if actual_profit > 0 else "profit-negative"
+            profit_label = f"Projected Profit ({profit_margin_pct:.1f}%)" if actual_profit > 0 else "Projected Loss!"
+            val_display = f"₹{actual_profit:,.0f}"
+            sub_text = "If bought right now"
+        else:
+            profit_class = "buy-text"
+            profit_label = "Projected Profit"
+            val_display = "---"
+            sub_text = "Enter Asking Price"
+            
         st.markdown(f"""
         <div class="metric-box">
             <p style="color:#94A3B8; margin-bottom:0px;">{profit_label}</p>
-            <p class="{profit_class}">₹{actual_profit:,.0f}</p>
-            <p style="color:#94A3B8; font-size:12px;">If bought right now</p>
+            <p class="{profit_class}">{val_display}</p>
+            <p style="color:#94A3B8; font-size:12px;">{sub_text}</p>
         </div>
         """, unsafe_allow_html=True)
 
     # --- ROW 2: DEAL DECISION ALERT ---
-    if actual_profit < 0:
-        st.error(f"🛑 BAD DEAL: Buying for ₹{seller_asking:,.0f} means a likely loss. Negotiate down to at least ₹{target_buy_price:,.0f}.")
-    elif profit_margin_pct < target_margin:
-        st.warning(f"⚠️ RISKY DEAL: Makes a profit, but at {profit_margin_pct:.1f}%, it misses the {target_margin}% goal. Drop the seller by ₹{(seller_asking - target_buy_price):,.0f}.")
+    # THE FIX: Hides the deal alert until a price is typed
+    if seller_asking > 0:
+        if actual_profit < 0:
+            st.error(f"🛑 BAD DEAL: Buying for ₹{seller_asking:,.0f} means a likely loss. Negotiate down to at least ₹{target_buy_price:,.0f}.")
+        elif profit_margin_pct < target_margin:
+            st.warning(f"⚠️ RISKY DEAL: Makes a profit, but at {profit_margin_pct:.1f}%, it misses the {target_margin}% goal. Drop the seller by ₹{(seller_asking - target_buy_price):,.0f}.")
+        else:
+            st.success(f"✅ GREAT DEAL: Buying at ₹{seller_asking:,.0f} secures your {target_margin}% margin. Lock it in.")
     else:
-        st.success(f"✅ GREAT DEAL: Buying at ₹{seller_asking:,.0f} secures your {target_margin}% margin. Lock it in.")
+        st.info("ℹ️ Enter the Seller's Asking Price in the sidebar to run the Deal Decision Engine.")
 
     # --- ROW 3: ASSET VALUATION ---
     st.markdown("### 📉 Vehicle Asset Valuation")
@@ -235,7 +266,8 @@ else:
         fig1 = px.histogram(filtered_data, x="Price_Lakhs", nbins=15, 
                             title="Where other sellers are pricing this car",
                             color_discrete_sequence=['#3B82F6'])
-        fig1.add_vline(x=seller_asking/100000, line_dash="dash", line_color="red", annotation_text="Seller's Price")
+        if seller_asking > 0:
+            fig1.add_vline(x=seller_asking/100000, line_dash="dash", line_color="red", annotation_text="Seller's Price")
         fig1.update_layout(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)", font_color="white")
         st.plotly_chart(fig1, use_container_width=True)
 
