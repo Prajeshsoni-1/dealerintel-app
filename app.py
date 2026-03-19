@@ -29,7 +29,7 @@ st.markdown("""
 
 # --- CLOUD DATABASE SETUP ---
 SUPABASE_URL = "https://ayedgiyciuwyousmfhvr.supabase.co"
-SUPABASE_KEY = "sb_secret_cM2fQgEGTXzZW6mz2OTUbg_OfW0tmCs"
+SUPABASE_KEY = "sb_publishable_SsA9pIMsjpC-uF6Zsh31Jw_-MSZKEDF"
 
 @st.cache_resource
 def init_connection():
@@ -43,33 +43,22 @@ def load_cloud_data():
     limit = 1000
     offset = 0
     
-    # 🔄 THE PAGINATION LOOP: Fetching 1,000 at a time until it gets everything!
     while True:
         response = supabase.table('dealership_database').select("*").range(offset, offset + limit - 1).execute()
         data = response.data
-        
-        if not data:
-            break  # Stop if there's no more data
-            
+        if not data: break  
         all_data.extend(data)
-        
-        if len(data) < limit:
-            break  # Stop if the last batch had less than 1,000 cars
-            
+        if len(data) < limit: break  
         offset += limit
         
-    # Convert the massive stacked list into our Pandas DataFrame
     df = pd.DataFrame(all_data)
-    
     if not df.empty:
         df['Price_Raw'] = pd.to_numeric(df['Price_Raw'], errors='coerce')
         df['Kilometer'] = pd.to_numeric(df['Kilometer'], errors='coerce')
         df['Reg_Year'] = pd.to_numeric(df['Reg_Year'], errors='coerce')
         df['Age'] = pd.to_numeric(df['Age'], errors='coerce')
-        
     return df
 
-# --- LOAD MASTER NEW PRICES CSV ---
 @st.cache_data
 def load_new_prices():
     if os.path.exists("new_car_prices.csv"):
@@ -84,7 +73,6 @@ def load_new_prices():
 df = load_cloud_data()
 new_prices_df = load_new_prices()
 
-# --- CSV DOWNLOAD FUNCTION ---
 @st.cache_data
 def convert_df(df):
     return df.to_csv(index=False).encode('utf-8')
@@ -112,14 +100,12 @@ with st.sidebar:
         brands = sorted(new_prices_df['Make'].dropna().unique().tolist())
     else:
         brands = sorted(df['Make/Brand'].dropna().unique().tolist()) if not df.empty else ["No Data"]
-
     selected_brand = st.selectbox("Make/Brand", brands)
 
     if not new_prices_df.empty and 'Model' in new_prices_df.columns:
         models = sorted(new_prices_df[new_prices_df['Make'] == selected_brand]['Model'].dropna().unique().tolist())
     else:
         models = sorted(df[df['Make/Brand'] == selected_brand]['Model'].dropna().unique().tolist()) if not df.empty else ["No Data"]
-
     selected_model = st.selectbox("Model", models)
 
     if not df.empty:
@@ -131,10 +117,26 @@ with st.sidebar:
     locations = ["All India"] + sorted(df['Location'].dropna().unique().tolist()) if not df.empty else ["All India"]
     selected_location = st.selectbox("State / Location", locations)
 
+    # ==========================================
+    # 🎯 THE RESTORED VARIANT MENU
+    # ==========================================
+    raw_variants = []
+    
+    # Grab variants from CSV
     if not new_prices_df.empty and 'Variant' in new_prices_df.columns:
-        variants = ["Any Variant"] + sorted(new_prices_df[(new_prices_df['Make'] == selected_brand) & (new_prices_df['Model'] == selected_model)]['Variant'].dropna().astype(str).unique().tolist())
+        csv_vars = new_prices_df[(new_prices_df['Make'] == selected_brand) & (new_prices_df['Model'] == selected_model)]['Variant'].dropna().astype(str).tolist()
+        raw_variants.extend(csv_vars)
+        
+    # Grab variants from Live Cloud Database
+    if not df.empty:
+        cloud_vars = df[(df['Make/Brand'] == selected_brand) & (df['Model'] == selected_model)]['Variant'].dropna().astype(str).tolist()
+        raw_variants.extend(cloud_vars)
+        
+    if raw_variants:
+        # Remove duplicates and sort them
+        variants = ["Any Variant"] + sorted(list(set(raw_variants)))
     else:
-        variants = ["Any Variant"] + sorted(df[(df['Make/Brand'] == selected_brand) & (df['Model'] == selected_model)]['Variant'].dropna().unique().tolist()) if not df.empty else ["Any Variant"]
+        variants = ["Any Variant"]
         
     selected_variant = st.selectbox("Variant (Optional)", variants)
     
@@ -159,15 +161,13 @@ if selected_variant != "Any Variant":
     mask = mask & (df['Variant'] == selected_variant)
 
 filtered_data = df[mask]
-# ==========================================
 
 # --- DASHBOARD UI ---
 st.title(f"Deal Analyzer: {selected_brand} {selected_model}")
 
 if filtered_data.empty:
-    st.warning("⚠️ No live market data found for this exact combination yet. Try setting Variant or Year to 'Any' or check the Cloud Inventory tracker in the sidebar.")
+    st.warning("⚠️ No live market data found for this exact combination yet. Try broadening your filters.")
 else:
-    # --- CORE MATH ---
     avg_market_price = filtered_data['Price_Raw'].mean()
     avg_age = filtered_data['Age'].mean()
     avg_km = filtered_data['Kilometer'].mean()
@@ -178,7 +178,6 @@ else:
     actual_profit = avg_market_price - seller_asking
     profit_margin_pct = (actual_profit / avg_market_price) * 100 if avg_market_price > 0 else 0
 
-    # --- THE SMART DEPRECIATION ENGINE ---
     est_new_price = 0
     price_source = ""
     
@@ -186,10 +185,19 @@ else:
         est_new_price = known_new_price
         price_source = "(Manual Input)"
     elif not new_prices_df.empty and 'Make' in new_prices_df.columns and 'Ex_Showroom_Price' in new_prices_df.columns:
-        match = new_prices_df[(new_prices_df['Make'] == selected_brand) & (new_prices_df['Model'] == selected_model)]
-        if not match.empty:
-            est_new_price = match['Ex_Showroom_Price'].mean()
-            price_source = "(Master Database Avg)"
+        if selected_variant != "Any Variant" and 'Variant' in new_prices_df.columns:
+            exact_match = new_prices_df[(new_prices_df['Make'] == selected_brand) & 
+                                        (new_prices_df['Model'] == selected_model) & 
+                                        (new_prices_df['Variant'] == selected_variant)]
+            if not exact_match.empty:
+                est_new_price = exact_match['Ex_Showroom_Price'].values[0]
+                price_source = f"(Exact Variant: {selected_variant})"
+        
+        if est_new_price == 0:
+            avg_match = new_prices_df[(new_prices_df['Make'] == selected_brand) & (new_prices_df['Model'] == selected_model)]
+            if not avg_match.empty:
+                est_new_price = avg_match['Ex_Showroom_Price'].mean()
+                price_source = "(Model Average)"
             
     if est_new_price == 0:
         est_new_price = avg_market_price * 1.5 
@@ -197,11 +205,9 @@ else:
 
     depreciation_percent = ((est_new_price - avg_market_price) / est_new_price) * 100 if est_new_price > 0 else 0
 
-    st.success(f"☁️ Cloud Sync Active: Benchmarking against {len(filtered_data)} live vehicles in the market.")
+    st.success(f"☁️ Cloud Sync Active: Benchmarking strictly against {len(filtered_data)} vehicles.")
 
-    # --- ROW 1: DEAL METRICS ---
     col1, col2, col3, col4 = st.columns(4)
-    
     with col1:
         display_asking = f"₹{seller_asking/100000:,.2f} Lakhs" if seller_asking > 0 else "₹0.00 Lakhs"
         st.markdown(f"""
@@ -211,7 +217,6 @@ else:
             <p style="color:#94A3B8; font-size:12px;">The price on the table</p>
         </div>
         """, unsafe_allow_html=True)
-
     with col2:
         st.markdown(f"""
         <div class="metric-box">
@@ -220,7 +225,6 @@ else:
             <p style="color:#94A3B8; font-size:12px;">Expected selling price</p>
         </div>
         """, unsafe_allow_html=True)
-
     with col3:
         st.markdown(f"""
         <div class="metric-box">
@@ -229,7 +233,6 @@ else:
             <p style="color:#3B82F6; font-size:12px;">To hit {target_margin}% Margin</p>
         </div>
         """, unsafe_allow_html=True)
-
     with col4:
         if seller_asking > 0:
             profit_class = "profit-positive" if actual_profit > 0 else "profit-negative"
@@ -250,7 +253,6 @@ else:
         </div>
         """, unsafe_allow_html=True)
 
-    # --- ROW 2: DEAL DECISION ALERT ---
     if seller_asking > 0:
         if actual_profit < 0:
             st.error(f"🛑 BAD DEAL: Buying for ₹{seller_asking:,.0f} means a likely loss. Negotiate down to at least ₹{target_buy_price:,.0f}.")
@@ -261,7 +263,6 @@ else:
     else:
         st.info("ℹ️ Enter the Seller's Asking Price in the sidebar to run the Deal Decision Engine.")
 
-    # --- ROW 3: ASSET VALUATION ---
     st.markdown("### 📉 Vehicle Asset Valuation")
     vcol1, vcol2, vcol3, vcol4 = st.columns(4)
     with vcol1:
@@ -274,8 +275,6 @@ else:
         st.markdown(f"<div class='value-box'><p style='color:#94A3B8; margin:0;'>Average Odometer</p><h4>{avg_km:,.0f} km</h4></div>", unsafe_allow_html=True)
 
     st.markdown("---")
-
-    # --- DATA VISUALIZATIONS ---
     st.subheader("📊 Market Proof (Negotiation Tools)")
     chart_col1, chart_col2 = st.columns(2)
 
@@ -296,7 +295,6 @@ else:
         fig2.update_layout(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)", font_color="white")
         st.plotly_chart(fig2, use_container_width=True)
 
-    # --- LIVE INVENTORY FEED & EXCEL DOWNLOAD ---
     colA, colB = st.columns([0.8, 0.2])
     with colA:
         st.subheader("🚗 Live Market Inventory")
@@ -305,7 +303,7 @@ else:
         st.download_button(
             label="📥 Download as Excel/CSV",
             data=csv_data,
-            file_name=f"{selected_brand}_{selected_model}_MarketData.csv",
+            file_name=f"{selected_brand}_{selected_model}_{selected_variant}_Data.csv",
             mime="text/csv"
         )
 
