@@ -1,13 +1,33 @@
-import streamlit as st
-import pandas as pd
-from supabase import create_client
-import plotly.express as px
 import os
 
-# --- PAGE SETUP & UI THEME ---
-st.set_page_config(page_title="DealerIntel Pro | Procurement", page_icon="🏎️", layout="wide")
+import pandas as pd
+import plotly.express as px
+import streamlit as st
+from supabase import create_client
 
-st.markdown("""
+from procurement_logic import (
+    CURRENT_YEAR,
+    LOCAL_MARKET_FILE,
+    LOCAL_STOCK_FILE,
+    MASTER_CATALOG_FILE,
+    compute_demand_score,
+    compute_internal_stock_signal,
+    compute_market_valuation,
+    compute_procurement_metrics,
+    evaluate_procurement_decision,
+    get_catalog_price,
+    get_deductions,
+    load_csv_dataset,
+    normalize_catalog_schema,
+    normalize_inventory_schema,
+    build_comparable_pool,
+)
+
+
+st.set_page_config(page_title="DealerIntel Pro | Procurement", page_icon="🚗", layout="wide")
+
+st.markdown(
+    """
     <style>
     .main {background-color: #0E1117;}
     h1, h2, h3 {color: #E2E8F0;}
@@ -15,6 +35,10 @@ st.markdown("""
         background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
         border-radius: 10px; padding: 20px; border: 1px solid #334155;
         box-shadow: 0 4px 6px rgba(0,0,0,0.3); text-align: center; margin-bottom: 15px;
+        min-height: 220px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
     .value-box {
         background: linear-gradient(135deg, #0F172A 0%, #020617 100%);
@@ -24,291 +48,341 @@ st.markdown("""
     .profit-positive {color: #10B981; font-size: 26px; font-weight: bold;}
     .profit-negative {color: #EF4444; font-size: 26px; font-weight: bold;}
     .buy-text {color: #3B82F6; font-size: 24px; font-weight: bold;}
+    .caption-text {color: #94A3B8; font-size: 12px;}
     </style>
-""", unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True,
+)
 
-# --- CLOUD DATABASE SETUP ---
-SUPABASE_URL = "https://ayedgiyciuwyousmfhvr.supabase.co"
-SUPABASE_KEY = "sb_publishable_SsA9pIMsjpC-uF6Zsh31Jw_-MSZKEDF"
+
+RUPEE = "\u20B9"
+
+
+def get_optional_secret(key):
+    try:
+        return st.secrets[key]
+    except Exception:
+        return ""
+
+
+SUPABASE_URL = os.getenv("SUPABASE_URL") or get_optional_secret("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY") or get_optional_secret("SUPABASE_KEY")
+
+
+def export_csv(df):
+    return df.to_csv(index=False).encode("utf-8")
+
 
 @st.cache_resource
 def init_connection():
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        return None
     return create_client(SUPABASE_URL, SUPABASE_KEY)
 
-supabase = init_connection()
 
-@st.cache_data(ttl=300) 
+@st.cache_data(ttl=300)
 def load_cloud_data():
-    all_data = []
-    limit = 1000
-    offset = 0
-    
-    while True:
-        response = supabase.table('dealership_database').select("*").range(offset, offset + limit - 1).execute()
-        data = response.data
-        if not data: break  
-        all_data.extend(data)
-        if len(data) < limit: break  
-        offset += limit
-        
-    df = pd.DataFrame(all_data)
-    if not df.empty:
-        df['Price_Raw'] = pd.to_numeric(df['Price_Raw'], errors='coerce')
-        df['Kilometer'] = pd.to_numeric(df['Kilometer'], errors='coerce')
-        df['Reg_Year'] = pd.to_numeric(df['Reg_Year'], errors='coerce')
-        df['Age'] = pd.to_numeric(df['Age'], errors='coerce')
-    return df
+    client = init_connection()
+    if client is None:
+        return None, "Supabase credentials not configured."
+
+    try:
+        response = client.table("dealership_database").select("*").range(0, 4999).execute()
+        data = response.data or []
+        return normalize_inventory_schema(pd.DataFrame(data)), ""
+    except Exception as exc:
+        return None, f"Failed to load cloud inventory: {exc}"
+
 
 @st.cache_data
-def load_new_prices():
-    if os.path.exists("new_car_prices.csv"):
-        try:
-            temp_df = pd.read_csv("new_car_prices.csv")
-            temp_df.columns = temp_df.columns.str.strip() 
-            return temp_df
-        except Exception:
-            pass
-    return pd.DataFrame()
+def load_local_market():
+    return load_csv_dataset(LOCAL_MARKET_FILE, normalize_inventory_schema)
 
-df = load_cloud_data()
-new_prices_df = load_new_prices()
 
 @st.cache_data
-def convert_df(df):
-    return df.to_csv(index=False).encode('utf-8')
+def load_internal_stock():
+    return load_csv_dataset(LOCAL_STOCK_FILE, normalize_inventory_schema)
 
-# --- SIDEBAR & FILTERS ---
+
+@st.cache_data
+def load_master_catalog():
+    return load_csv_dataset(MASTER_CATALOG_FILE, normalize_catalog_schema)
+
+
+cloud_df, cloud_error = load_cloud_data()
+local_market_df, local_market_error = load_local_market()
+internal_stock_df, internal_stock_error = load_internal_stock()
+master_catalog_df, catalog_error = load_master_catalog()
+
+market_df = cloud_df if cloud_df is not None and not cloud_df.empty else local_market_df
+market_source = "Supabase live inventory" if cloud_df is not None and not cloud_df.empty else f"Local market file ({LOCAL_MARKET_FILE})"
+market_warning = ""
+if market_df is None or market_df.empty:
+    market_df = local_market_df
+    market_warning = cloud_error or local_market_error
+elif cloud_error:
+    market_warning = cloud_error
+
+if market_df is None:
+    market_df = pd.DataFrame()
+if internal_stock_df is None:
+    internal_stock_df = pd.DataFrame()
+if master_catalog_df is None:
+    master_catalog_df = pd.DataFrame()
+
 with st.sidebar:
     try:
         st.image("logo.png", use_container_width=True)
-    except:
-        st.markdown("### 🏎️ DealerIntel Cloud")
-    
+    except Exception:
+        st.markdown("### DealerIntel Cloud")
+
     st.markdown("---")
-    
-    with st.expander("☁️ Check Live Cloud Inventory"):
-        if not df.empty:
-            st.write(f"**Total Cars Scraped:** {len(df)}")
-            inventory_summary = df.groupby(['Make/Brand', 'Model']).size().reset_index(name='Available Data')
-            st.dataframe(inventory_summary, hide_index=True, use_container_width=True)
+    if market_warning:
+        st.warning(market_warning)
+    if internal_stock_error and "not found" not in internal_stock_error:
+        st.warning(internal_stock_error)
+    if catalog_error and "not found" not in catalog_error:
+        st.warning(catalog_error)
+
+    with st.expander("Check Market Inventory"):
+        if not market_df.empty:
+            st.write(f"**Source:** {market_source}")
+            st.write(f"**Listings:** {len(market_df)}")
+            st.dataframe(
+                market_df.groupby(["Make/Brand", "Model"]).size().reset_index(name="Listings").sort_values("Listings", ascending=False).head(50),
+                hide_index=True,
+                use_container_width=True,
+            )
         else:
-            st.write("Database is currently empty.")
-            
-    st.header("1. Market Filters")
+            st.write("Market inventory unavailable.")
 
-    if not new_prices_df.empty and 'Make' in new_prices_df.columns:
-        brands = sorted(new_prices_df['Make'].dropna().unique().tolist())
-    else:
-        brands = sorted(df['Make/Brand'].dropna().unique().tolist()) if not df.empty else ["No Data"]
-    selected_brand = st.selectbox("Make/Brand", brands)
+    st.header("1. Car Identity")
+    show_discontinued = st.checkbox("Include Discontinued Models", value=True)
+    active_catalog = master_catalog_df
+    if not master_catalog_df.empty and not show_discontinued and "Market_Status" in master_catalog_df.columns:
+        active_catalog = master_catalog_df[master_catalog_df["Market_Status"] == "Active"]
 
-    if not new_prices_df.empty and 'Model' in new_prices_df.columns:
-        models = sorted(new_prices_df[new_prices_df['Make'] == selected_brand]['Model'].dropna().unique().tolist())
-    else:
-        models = sorted(df[df['Make/Brand'] == selected_brand]['Model'].dropna().unique().tolist()) if not df.empty else ["No Data"]
-    selected_model = st.selectbox("Model", models)
+    brands = sorted(active_catalog["Make"].replace("", None).dropna().unique().tolist()) if not active_catalog.empty else sorted(market_df["Make/Brand"].replace("Unknown", None).dropna().unique().tolist()) if not market_df.empty else ["No Data"]
+    selected_brand = st.selectbox("Make/Brand", brands if brands else ["No Data"])
 
-    if not df.empty:
-        years = ["Any Year"] + sorted(df[(df['Make/Brand'] == selected_brand) & (df['Model'] == selected_model)]['Reg_Year'].dropna().astype(int).unique().tolist(), reverse=True)
-    else:
-        years = ["Any Year"]
-    selected_year = st.selectbox("Registration Year", years)
+    models = (
+        sorted(active_catalog[active_catalog["Make"] == selected_brand]["Model"].replace("", None).dropna().unique().tolist())
+        if not active_catalog.empty
+        else sorted(market_df[market_df["Make/Brand"] == selected_brand]["Model"].replace("Unknown", None).dropna().unique().tolist()) if not market_df.empty else ["No Data"]
+    )
+    selected_model = st.selectbox("Model", models if models else ["No Data"])
 
-    locations = ["All India"] + sorted(df['Location'].dropna().unique().tolist()) if not df.empty else ["All India"]
-    selected_location = st.selectbox("State / Location", locations)
+    variants = []
+    if not active_catalog.empty:
+        variants.extend(active_catalog[(active_catalog["Make"] == selected_brand) & (active_catalog["Model"] == selected_model)]["Variant"].replace("", None).dropna().tolist())
+    if not market_df.empty:
+        variants.extend(market_df[(market_df["Make/Brand"] == selected_brand) & (market_df["Model"] == selected_model)]["Variant"].replace("Unknown", None).dropna().tolist())
+    selected_variant = st.selectbox("Variant", ["Any Variant"] + sorted(set(variants)))
 
-    # ==========================================
-    # 🎯 THE RESTORED VARIANT MENU
-    # ==========================================
-    raw_variants = []
-    
-    # Grab variants from CSV
-    if not new_prices_df.empty and 'Variant' in new_prices_df.columns:
-        csv_vars = new_prices_df[(new_prices_df['Make'] == selected_brand) & (new_prices_df['Model'] == selected_model)]['Variant'].dropna().astype(str).tolist()
-        raw_variants.extend(csv_vars)
-        
-    # Grab variants from Live Cloud Database
-    if not df.empty:
-        cloud_vars = df[(df['Make/Brand'] == selected_brand) & (df['Model'] == selected_model)]['Variant'].dropna().astype(str).tolist()
-        raw_variants.extend(cloud_vars)
-        
-    if raw_variants:
-        # Remove duplicates and sort them
-        variants = ["Any Variant"] + sorted(list(set(raw_variants)))
-    else:
-        variants = ["Any Variant"]
-        
-    selected_variant = st.selectbox("Variant (Optional)", variants)
-    
-    st.markdown("---")
-    st.header("2. Deal Specifics")
-    seller_asking = st.number_input("Seller's Asking Price (₹)", min_value=0, value=0, step=10000)
-    target_margin = st.slider("Required Profit Margin (%)", min_value=5, max_value=30, value=15, step=1)
-    
-    st.markdown("---")
-    st.header("3. Asset Valuation")
-    known_new_price = st.number_input("Manual Override New Price (₹)", min_value=0, value=0, step=50000, help="Leave at 0 to use your Master CSV Database.")
+    st.header("2. Vehicle Profile")
+    selected_year = st.selectbox("Registration Year", ["Any Year"] + list(range(CURRENT_YEAR, CURRENT_YEAR - 15, -1)))
+    selected_location = st.selectbox("State / Location", ["All India"] + sorted(market_df["Location"].replace("Unknown", None).dropna().unique().tolist()) if not market_df.empty else ["All India"])
+    selected_fuel = st.selectbox("Fuel Type", ["Any Fuel"] + sorted(market_df[(market_df["Make/Brand"] == selected_brand) & (market_df["Model"] == selected_model)]["Fuel_Type"].replace("Unknown", None).dropna().unique().tolist()) if not market_df.empty else ["Any Fuel"])
+    selected_transmission = st.selectbox("Transmission", ["Any Transmission"] + sorted(market_df[(market_df["Make/Brand"] == selected_brand) & (market_df["Model"] == selected_model)]["Transmission"].replace("Unknown", None).dropna().unique().tolist()) if not market_df.empty else ["Any Transmission"])
+    current_km = st.number_input("Current Kilometer", min_value=0, value=0, step=1000)
+    owner_count = st.selectbox("Owner Count", [0, 1, 2, 3, 4], format_func=lambda x: "Unknown" if x == 0 else f"{x} Owner")
 
-# ==========================================
-# --- FILTER LOGIC ---
-# ==========================================
-mask = (df['Make/Brand'] == selected_brand) & (df['Model'] == selected_model)
-if selected_year != "Any Year":
-    mask = mask & (df['Reg_Year'] == int(selected_year)) 
-if selected_location != "All India":
-    mask = mask & (df['Location'] == selected_location)
-if selected_variant != "Any Variant":
-    mask = mask & (df['Variant'] == selected_variant)
+    st.header("3. Deal & Margin")
+    seller_asking = st.number_input("Seller Asking Price (₹)", min_value=0, value=0, step=10000)
+    target_margin = st.slider("Required Gross Margin (%)", min_value=5, max_value=30, value=15, step=1)
 
-filtered_data = df[mask]
+    st.header("4. Physical Condition")
+    tyre_cond = st.selectbox("Tyre Condition", ["Good (0 deduction)", "Average (-₹15k)", "Needs Replacement (-₹30k)"])
+    paint_cond = st.selectbox("Paint / Body", ["Clean (0 deduction)", "Minor Scratches (-₹15k)", "Major Dents/Repaint (-₹40k)"])
+    mech_cond = st.selectbox("Engine / Mechanical", ["Smooth (0 deduction)", "Minor Issues/Suspension (-₹20k)", "Major Work Needed (-₹50k)"])
+    color_appeal = st.selectbox("Color Appeal", ["High/Neutral", "Low/Unpopular (-₹25k)"])
+    interior_cond = st.checkbox("Interior repair needed (-₹10k)")
+    accidental_repair = st.checkbox("Accidental / structural work (-₹35k)")
+    service_gap = st.checkbox("Poor service history (-₹15k)")
+    electrical_work = st.checkbox("Electrical / AC work (-₹20k)")
 
-# --- DASHBOARD UI ---
+    st.header("5. New Car Benchmark")
+    known_new_price = st.number_input("Manual New Car Price (₹)", min_value=0, value=0, step=50000)
+
+catalog_price, price_source, market_status = get_catalog_price(
+    active_catalog,
+    selected_brand,
+    selected_model,
+    selected_variant,
+    selected_fuel,
+    selected_transmission,
+    known_new_price,
+)
+
+base_pool, weighted_pool, comparable_pool = build_comparable_pool(
+    market_df,
+    selected_brand,
+    selected_model,
+    selected_variant,
+    selected_year,
+    selected_location,
+    selected_fuel,
+    selected_transmission,
+    owner_count,
+    current_km,
+)
+
+valuation, est_new_price = compute_market_valuation(
+    comparable_pool,
+    weighted_pool,
+    catalog_price,
+    selected_year,
+    current_km,
+    market_status,
+    selected_brand,
+)
+demand_score, demand_label, demand_note = compute_demand_score(base_pool, comparable_pool)
+base_stock_count, exact_stock_count, stock_note = compute_internal_stock_signal(
+    internal_stock_df,
+    selected_brand,
+    selected_model,
+    selected_variant,
+    selected_fuel,
+    selected_transmission,
+)
+
+deductions = get_deductions(
+    tyre_cond,
+    paint_cond,
+    mech_cond,
+    color_appeal,
+    interior_cond,
+    accidental_repair,
+    service_gap,
+    electrical_work,
+)
+procurement = compute_procurement_metrics(
+    valuation["retail_market_price"],
+    deductions,
+    target_margin,
+    demand_score,
+    exact_stock_count,
+    owner_count,
+)
+decision = evaluate_procurement_decision(
+    valuation,
+    procurement,
+    seller_asking,
+    demand_score,
+    exact_stock_count,
+)
+
+target_buy_price = procurement["target_buy_price"]
+walkaway_price = procurement["walkaway_price"]
+post_refurb_retail = procurement["post_refurb_retail"]
+actual_profit = post_refurb_retail - seller_asking
+profit_margin_pct = (actual_profit / post_refurb_retail) * 100 if seller_asking > 0 and post_refurb_retail > 0 else 0
+
 st.title(f"Deal Analyzer: {selected_brand} {selected_model}")
 
-if filtered_data.empty:
-    st.warning("⚠️ No live market data found for this exact combination yet. Try broadening your filters.")
+if valuation["retail_market_price"] == 0:
+    st.error("No usable price signal found. Add a specific year and benchmark or load market data before using this for buying.")
 else:
-    avg_market_price = filtered_data['Price_Raw'].mean()
-    avg_age = filtered_data['Age'].mean()
-    avg_km = filtered_data['Kilometer'].mean()
-    
-    margin_multiplier = (100 - target_margin) / 100
-    target_buy_price = avg_market_price * margin_multiplier
-    
-    actual_profit = avg_market_price - seller_asking
-    profit_margin_pct = (actual_profit / avg_market_price) * 100 if avg_market_price > 0 else 0
+    if valuation["is_synthetic"]:
+        st.warning("Synthetic pricing is active. Use this only as a fallback benchmark, not as a final approval price.")
+    else:
+        st.success(f"Market-backed pricing is active from {market_source}. Scope: {valuation['pricing_scope']}.")
 
-    est_new_price = 0
-    price_source = ""
-    
-    if known_new_price > 0:
-        est_new_price = known_new_price
-        price_source = "(Manual Input)"
-    elif not new_prices_df.empty and 'Make' in new_prices_df.columns and 'Ex_Showroom_Price' in new_prices_df.columns:
-        if selected_variant != "Any Variant" and 'Variant' in new_prices_df.columns:
-            exact_match = new_prices_df[(new_prices_df['Make'] == selected_brand) & 
-                                        (new_prices_df['Model'] == selected_model) & 
-                                        (new_prices_df['Variant'] == selected_variant)]
-            if not exact_match.empty:
-                est_new_price = exact_match['Ex_Showroom_Price'].values[0]
-                price_source = f"(Exact Variant: {selected_variant})"
-        
-        if est_new_price == 0:
-            avg_match = new_prices_df[(new_prices_df['Make'] == selected_brand) & (new_prices_df['Model'] == selected_model)]
-            if not avg_match.empty:
-                est_new_price = avg_match['Ex_Showroom_Price'].mean()
-                price_source = "(Model Average)"
-            
-    if est_new_price == 0:
-        est_new_price = avg_market_price * 1.5 
-        price_source = "(Estimated)"
+    st.markdown(
+        f"""
+        <div class="value-box">
+            <p style="color:#94A3B8; margin:0;">Pricing Method</p>
+            <h4>{valuation["price_method"]}</h4>
+            <p class="caption-text">Demand: <span style="font-weight:600;">{demand_label} ({demand_score}/100)</span></p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    depreciation_percent = ((est_new_price - avg_market_price) / est_new_price) * 100 if est_new_price > 0 else 0
+    if decision["decision_color"] == "success":
+        st.success(f"Approval Status: {decision['decision']}")
+    elif decision["decision_color"] == "warning":
+        st.warning(f"Approval Status: {decision['decision']}")
+    elif decision["decision_color"] == "error":
+        st.error(f"Approval Status: {decision['decision']}")
+    else:
+        st.info(f"Approval Status: {decision['decision']}")
 
-    st.success(f"☁️ Cloud Sync Active: Benchmarking strictly against {len(filtered_data)} vehicles.")
+    if decision["reasons"]:
+        st.caption("Decision basis: " + " | ".join(decision["reasons"]))
 
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        display_asking = f"₹{seller_asking/100000:,.2f} Lakhs" if seller_asking > 0 else "₹0.00 Lakhs"
-        st.markdown(f"""
-        <div class="metric-box">
-            <p style="color:#94A3B8; margin-bottom:0px;">Seller's Asking Price</p>
-            <h3 style="color:#F8FAFC;">{display_asking}</h3>
-            <p style="color:#94A3B8; font-size:12px;">The price on the table</p>
-        </div>
-        """, unsafe_allow_html=True)
-    with col2:
-        st.markdown(f"""
-        <div class="metric-box">
-            <p style="color:#94A3B8; margin-bottom:0px;">True Market Average</p>
-            <h3 style="color:#F8FAFC;">₹{avg_market_price/100000:,.2f} Lakhs</h3>
-            <p style="color:#94A3B8; font-size:12px;">Expected selling price</p>
-        </div>
-        """, unsafe_allow_html=True)
-    with col3:
-        st.markdown(f"""
-        <div class="metric-box">
-            <p style="color:#94A3B8; margin-bottom:0px;">Target Buy Price</p>
-            <p class="buy-text">₹{target_buy_price/100000:,.2f} Lakhs</p>
-            <p style="color:#3B82F6; font-size:12px;">To hit {target_margin}% Margin</p>
-        </div>
-        """, unsafe_allow_html=True)
-    with col4:
-        if seller_asking > 0:
-            profit_class = "profit-positive" if actual_profit > 0 else "profit-negative"
-            profit_label = f"Projected Profit ({profit_margin_pct:.1f}%)" if actual_profit > 0 else "Projected Loss!"
-            val_display = f"₹{actual_profit:,.0f}"
-            sub_text = "If bought right now"
-        else:
-            profit_class = "buy-text"
-            profit_label = "Projected Profit"
-            val_display = "---"
-            sub_text = "Enter Asking Price"
-            
-        st.markdown(f"""
-        <div class="metric-box">
-            <p style="color:#94A3B8; margin-bottom:0px;">{profit_label}</p>
-            <p class="{profit_class}">{val_display}</p>
-            <p style="color:#94A3B8; font-size:12px;">{sub_text}</p>
-        </div>
-        """, unsafe_allow_html=True)
+    c1, c2, c3, c4 = st.columns(4)
+    with c1:
+        st.markdown(f"<div class='metric-box'><p style='color:#94A3B8;'>Seller Asking Price</p><h3 style='color:#F8FAFC;'>{RUPEE}{seller_asking/100000:,.2f} Lakhs</h3><p class='caption-text'>Current buy-side ask</p></div>", unsafe_allow_html=True)
+    with c2:
+        st.markdown(f"<div class='metric-box'><p style='color:#94A3B8;'>Expected Retail Market</p><h3 style='color:#F8FAFC;'>{RUPEE}{valuation['retail_market_price']/100000:,.2f} Lakhs</h3><p class='caption-text'>Range: {RUPEE}{valuation['retail_price_low']/100000:,.2f}L - {RUPEE}{valuation['retail_price_high']/100000:,.2f}L</p></div>", unsafe_allow_html=True)
+    with c3:
+        st.markdown(f"<div class='metric-box'><p style='color:#94A3B8;'>Target Buy Price</p><p class='buy-text'>{RUPEE}{target_buy_price/100000:,.2f} Lakhs</p><p class='caption-text'>Walk-away above: {RUPEE}{walkaway_price/100000:,.2f}L</p></div>", unsafe_allow_html=True)
+    with c4:
+        profit_class = "profit-positive" if actual_profit > 0 else "profit-negative"
+        label = f"Projected Gross Profit ({profit_margin_pct:.1f}%)" if seller_asking > 0 else "Projected Gross Profit"
+        value = f"{RUPEE}{actual_profit:,.0f}" if seller_asking > 0 else "---"
+        st.markdown(f"<div class='metric-box'><p style='color:#94A3B8;'>{label}</p><p class='{profit_class}'>{value}</p><p class='caption-text'>After refurb estimate</p></div>", unsafe_allow_html=True)
 
     if seller_asking > 0:
-        if actual_profit < 0:
-            st.error(f"🛑 BAD DEAL: Buying for ₹{seller_asking:,.0f} means a likely loss. Negotiate down to at least ₹{target_buy_price:,.0f}.")
-        elif profit_margin_pct < target_margin:
-            st.warning(f"⚠️ RISKY DEAL: Makes a profit, but at {profit_margin_pct:.1f}%, it misses the {target_margin}% goal. Drop the seller by ₹{(seller_asking - target_buy_price):,.0f}.")
+        if decision["decision"] == "Approve Buy":
+            st.success(f"Buy zone. The ask is inside your target buy limit of {RUPEE}{target_buy_price:,.0f}.")
+        elif decision["decision"] == "Negotiate":
+            st.warning(f"Borderline buy. The ask is above target and close to walk-away. Push toward {RUPEE}{target_buy_price:,.0f}.")
+        elif decision["decision"] == "Manual Review":
+            st.warning(f"Manual review required. Even if the ask looks workable, the comp quality is not strong enough for auto-approval.")
         else:
-            st.success(f"✅ GREAT DEAL: Buying at ₹{seller_asking:,.0f} secures your {target_margin}% margin. Lock it in.")
+            st.error(f"Pass or renegotiate. Current ask is too high for this risk profile. Disciplined buy number: about {RUPEE}{target_buy_price:,.0f}.")
     else:
-        st.info("ℹ️ Enter the Seller's Asking Price in the sidebar to run the Deal Decision Engine.")
+        st.info("Enter the seller asking price to get the final procurement call.")
 
-    st.markdown("### 📉 Vehicle Asset Valuation")
-    vcol1, vcol2, vcol3, vcol4 = st.columns(4)
-    with vcol1:
-        st.markdown(f"<div class='value-box'><p style='color:#94A3B8; margin:0;'>Current New Price {price_source}</p><h4>₹{est_new_price/100000:,.2f} L</h4></div>", unsafe_allow_html=True)
-    with vcol2:
-        st.markdown(f"<div class='value-box'><p style='color:#94A3B8; margin:0;'>Total Market Depreciation</p><h4 style='color:#EF4444;'>↓ {depreciation_percent:.1f}%</h4></div>", unsafe_allow_html=True)
-    with vcol3:
-        st.markdown(f"<div class='value-box'><p style='color:#94A3B8; margin:0;'>Average Market Age</p><h4>{avg_age:.1f} Years</h4></div>", unsafe_allow_html=True)
-    with vcol4:
-        st.markdown(f"<div class='value-box'><p style='color:#94A3B8; margin:0;'>Average Odometer</p><h4>{avg_km:,.0f} km</h4></div>", unsafe_allow_html=True)
+    s1, s2, s3, s4 = st.columns(4)
+    with s1:
+        st.metric("New Car Price", f"{RUPEE}{est_new_price/100000:,.2f}L")
+        st.caption(price_source if price_source else "Estimated benchmark")
+    with s2:
+        st.metric("Market Status", market_status if market_status else "Unknown")
+        st.caption(f"Depreciation: {valuation['depreciation_percent']:.1f}%")
+    with s3:
+        st.metric("Refurb Estimate", f"{RUPEE}{procurement['refurb_cost']:,.0f}")
+        st.caption(f"Post-refurb retail: {RUPEE}{post_refurb_retail:,.0f}")
+    with s4:
+        st.metric("Internal Stock", exact_stock_count)
+        st.caption(stock_note)
 
-    st.markdown("---")
-    st.subheader("📊 Market Proof (Negotiation Tools)")
-    chart_col1, chart_col2 = st.columns(2)
+    i1, i2, i3 = st.columns(3)
+    with i1:
+        st.metric("Model Listings in Market", len(base_pool))
+        st.caption(demand_note)
+    with i2:
+        st.metric("Comps Used", valuation["comps_used"])
+        st.caption(f"Exact comps: {valuation['exact_comps_used']} | Model stock: {base_stock_count}")
+    with i3:
+        km_coverage = comparable_pool["Kilometer"].notna().mean() * 100 if not comparable_pool.empty else 0
+        st.metric("KM Coverage in Comps", f"{km_coverage:.0f}%")
+        st.caption(f"Source: {market_source}")
 
-    with chart_col1:
-        fig1 = px.histogram(filtered_data, x="Price_Lakhs", nbins=15, 
-                            title="Where other sellers are pricing this car",
-                            color_discrete_sequence=['#3B82F6'])
-        if seller_asking > 0:
-            fig1.add_vline(x=seller_asking/100000, line_dash="dash", line_color="red", annotation_text="Seller's Price")
-        fig1.update_layout(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)", font_color="white")
-        st.plotly_chart(fig1, use_container_width=True)
+    if not decision["trust_gate_passed"]:
+        st.info("Trust gate failed. The tool is intentionally preventing automatic approval because the comparable data is not strong enough.")
 
-    with chart_col2:
-        fig2 = px.scatter(filtered_data, x="Kilometer", y="Price_Lakhs", 
-                          color="Reg_Year", hover_data=["Variant", "Location"],
-                          title="Mileage vs. Market Price",
-                          color_continuous_scale=px.colors.sequential.Plasma)
-        fig2.update_layout(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)", font_color="white")
-        st.plotly_chart(fig2, use_container_width=True)
+    if not comparable_pool.empty:
+        st.markdown("---")
+        st.subheader("Market Proof")
+        g1, g2 = st.columns(2)
+        with g1:
+            fig1 = px.histogram(comparable_pool, x="Price_Lakhs", nbins=15, title="Comparable asking prices", color_discrete_sequence=["#3B82F6"])
+            if seller_asking > 0:
+                fig1.add_vline(x=seller_asking / 100000, line_dash="dash", line_color="red", annotation_text="Seller Ask")
+            fig1.add_vline(x=valuation["retail_market_price"] / 100000, line_dash="dot", line_color="#10B981", annotation_text="Retail Benchmark")
+            fig1.add_vline(x=target_buy_price / 100000, line_dash="dot", line_color="#F59E0B", annotation_text="Target Buy")
+            fig1.update_layout(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)", font_color="white")
+            st.plotly_chart(fig1, use_container_width=True)
+        with g2:
+            fig2 = px.scatter(comparable_pool, x="Kilometer", y="Price_Lakhs", color="Reg_Year", hover_data=["Variant", "Location", "Source", "Owner"], title="Mileage vs Market Price", color_continuous_scale=px.colors.sequential.Plasma)
+            fig2.update_layout(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)", font_color="white")
+            st.plotly_chart(fig2, use_container_width=True)
 
-    colA, colB = st.columns([0.8, 0.2])
-    with colA:
-        st.subheader("🚗 Live Market Inventory")
-    with colB:
-        csv_data = convert_df(filtered_data)
-        st.download_button(
-            label="📥 Download as Excel/CSV",
-            data=csv_data,
-            file_name=f"{selected_brand}_{selected_model}_{selected_variant}_Data.csv",
-            mime="text/csv"
-        )
-
-    st.dataframe(
-        filtered_data[['Make/Brand', 'Model', 'Variant', 'Reg_Year', 'Kilometer', 'Location', 'Price_Lakhs', 'Source', 'Listing_URL']],
-        use_container_width=True,
-        hide_index=True
-    )
+        st.subheader("Comparable Inventory")
+        st.download_button("Download CSV", export_csv(comparable_pool), file_name=f"{selected_brand}_{selected_model}_{selected_variant}_Data.csv", mime="text/csv")
+        cols = [c for c in ["Make/Brand", "Model", "Variant", "Reg_Year", "Kilometer", "Owner", "Fuel_Type", "Transmission", "Location", "Price_Lakhs", "Source", "Listing_Days", "comp_weight", "pricing_scope", "Listing_URL"] if c in comparable_pool.columns]
+        st.dataframe(comparable_pool[cols].sort_values(["pricing_scope", "comp_weight"], ascending=[True, False]), use_container_width=True, hide_index=True)
